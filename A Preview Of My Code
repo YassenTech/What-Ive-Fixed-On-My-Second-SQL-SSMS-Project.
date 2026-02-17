@@ -1,0 +1,60 @@
+/*makes empty locations the number 0 instead of null
+i tried adding "EmptyLocation" to the isnull command but it didnt work*/
+Select ISNULL(WareHouseLocation, '0') As EmptyLocationsAreNowTheNumber0 From online_sales_dataset
+
+--picks the first value that isnt empty
+Select Discount, COALESCE(Discount, 0) as SelectedTheFirstNotEmptyValue From online_sales_dataset
+
+--fixes typos customers make when writing theyre country 
+Select TRIM(Country) as fixedtyposwhencustomerswritewheretheyrecountryis From online_sales_dataset
+
+
+/*counts discounts for each customer order
+--also used "Group By" To Put Identical Rows Into "Buckets" To Do Math On It As A Group*/
+select count(Discount) countsthediscountforeachcustomerorder from online_sales_dataset group by CustomerID
+
+--gets the current date Makes it good for timestamping orders or dates
+Select GETDATE();
+
+--Turns all the numbes in (ShippingCost) Into Whole Numbers
+Select CAST(ShippingCost AS int) As ShippingCostWholeNumbers from online_sales_dataset
+
+--had to check the datatypes for each column 
+SELECT COLUMN_NAME, DATA_TYPE 
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'online_sales_dataset'
+
+Select DATEDIFF(day,InvoiceDate, GETDATE()) as HowLongAgoAcustomerPlacedAnOrder From online_sales_dataset;
+
+/*tried to change the invoicedate to a diffrent date datatype 
+to make it a recognized datediff (attempt Failed)*/
+ALTER TABLE online_sales_dataset
+ALTER COLUMN InvoiceDate date
+
+--finds the very last day of a month for that order
+SELECT EOMONTH(invoiceDate) As FindsTheVeryLastDayOfAMonthForThatOrder From online_sales_dataset;
+
+
+--checks if a date is real or a random word
+Select TRY_CONVERT(DATE, InvoiceDate) From online_sales_dataset
+
+--tries to turn text into a number without crashing
+Select TRY_CAST(Quantity AS INT) as TriesToTurnaATextIntoaNumberWithoutCrashing from online_sales_dataset
+
+
+--so here i tried to find a column where someone wrote letters into a number box
+select * from online_sales_dataset WHERE ISNUMERIC(CustomerID) = 0;
+
+--i made a Unit Price With Decimals Example: (19.99) into a whole number (Example: (19)
+Select CAST(UnitPrice AS int) FROM online_sales_dataset
+
+
+--stops the computer from exploding when trying to divide by 0
+Select Discount / NULLIF(Discount, 0) AS DivideBy0 from online_sales_dataset
+
+--Changes date format into human style (MM/DD/YY)
+SELECT CONVERT(VARCHAR, InvoiceDate, 101) AS HumanStyleDate from online_sales_dataset
+
+--fixes the stock codes to work regardless of how they were written
+SELECT UPPER(StockCode) As FixesTheStockCodesToWorkRegardlessOfHowItWasWritten From online_sales_dataset
+
